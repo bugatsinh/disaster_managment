@@ -167,7 +167,10 @@
           <h1 class="mb-2" style="font-weight:700">Victim / Emergency Log</h1>
           <p class="small-muted mb-0">Capture incident details, monitor active responses, and keep rescue updates organized in one place.</p>
         </div>
-        <a href="{{ url_for('volunteer.volunteer') }}" class="btn btn-outline-primary">Volunteer Dashboard →</a>
+        <div class="d-flex gap-2">
+          <a href="{{ url_for('volunteer.volunteer') }}" class="btn btn-outline-primary">Volunteer Dashboard →</a>
+          <a href="{{ url_for('admin.admin_login_page') }}" class="btn btn-outline-primary" style="border-color:rgba(200,57,27,0.3);color:#c8391b;">🛡️ Admin</a>
+        </div>
       </div>
 
       <!-- Helpline bar -->

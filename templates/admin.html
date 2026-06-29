@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Disaster Response</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:        #0f1923;
+      --ink-2:      #3d5166;
+      --surface:    #f0f2f5;
+      --card:       #ffffff;
+      --border:     #d5dce6;
+      --accent:     #c8391b;
+      --accent-bg:  #fce8e4;
+      --blue:       #1558b0;
+      --blue-bg:    #eaf0fb;
+      --green:      #1a7f4b;
+      --green-bg:   #eaf6ef;
+      --amber:      #9a5800;
+      --amber-bg:   #fef3e2;
+      --mono:       'IBM Plex Mono', monospace;
+      --sans:       'Inter', system-ui, sans-serif;
+      --r:          12px;
+      --shadow:     0 4px 18px rgba(15,25,35,0.07);
+      --shadow-lg:  0 10px 32px rgba(15,25,35,0.11);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: var(--ink);
+      color: #fff;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      border-bottom: 3px solid var(--accent);
+    }
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .topbar-brand .shield { font-size: 1.1rem; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-right a {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+    .topbar-right a:hover { color: #fff; }
+    .btn-logout {
+      background: rgba(200,57,27,0.18);
+      border: 1px solid rgba(200,57,27,0.4);
+      color: #f5a59a;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: background 0.15s;
+    }
+    .btn-logout:hover { background: rgba(200,57,27,0.3); }
+
+    /* ── Layout ── */
+    .page { max-width: 1280px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    /* ── Flash ── */
+    .flash-list { list-style: none; margin-bottom: 18px; }
+    .flash-list li {
+      background: var(--blue-bg);
+      border: 1px solid #c0d3f0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      color: var(--blue);
+      margin-bottom: 6px;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px 16px 14px;
+      box-shadow: var(--shadow);
+    }
+    .stat-card .num {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-card .lbl {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-2);
+    }
+    .stat-card.red   { border-top: 3px solid var(--accent); }
+    .stat-card.red .num { color: var(--accent); }
+    .stat-card.blue  { border-top: 3px solid var(--blue); }
+    .stat-card.blue .num { color: var(--blue); }
+    .stat-card.green { border-top: 3px solid var(--green); }
+    .stat-card.green .num { color: var(--green); }
+    .stat-card.amber { border-top: 3px solid #d97706; }
+    .stat-card.amber .num { color: #d97706; }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      box-shadow: var(--shadow);
+    }
+    .filter-bar label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-2);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .filter-bar input,
+    .filter-bar select {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      background: #f8f9fb;
+      color: var(--ink);
+      transition: border-color 0.15s;
+    }
+    .filter-bar input:focus,
+    .filter-bar select:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+    .filter-bar input { min-width: 200px; }
+    .btn-filter {
+      padding: 8px 18px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-filter:hover { background: #1d2e3f; }
+    .btn-clear {
+      padding: 8px 14px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--ink-2);
+      cursor: pointer;
+      font-family: var(--sans);
+      text-decoration: none;
+      display: inline-block;
+      line-height: 1.5;
+    }
+    .btn-clear:hover { border-color: var(--ink-2); color: var(--ink); }
+
+    /* ── Section header ── */
+    .sec-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sec-head h2 { font-size: 1.1rem; font-weight: 700; }
+    .count-pill {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+
+    /* ── Report cards ── */
+    .report-grid { display: grid; gap: 14px; }
+    .r-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .r-card.immediate { border-left: 5px solid var(--accent); }
+    .r-card.high      { border-left: 5px solid #d97706; }
+    .r-card.medium    { border-left: 5px solid var(--blue); }
+    .r-card.low       { border-left: 5px solid #6b7280; }
+    .r-card.complete  { opacity: 0.6; }
+
+    .r-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .r-head-left { flex: 1; min-width: 0; }
+    .r-id {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--ink-2);
+      margin-bottom: 2px;
+    }
+    .r-name { font-size: 1rem; font-weight: 700; }
+    .r-location { font-size: 0.85rem; color: var(--ink-2); margin-top: 2px; }
+
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      letter-spacing: 0.03em;
+    }
+    .badge-immediate { background: var(--accent-bg); color: var(--accent); }
+    .badge-high      { background: #fef3e2; color: #a05000; }
+    .badge-medium    { background: var(--blue-bg); color: var(--blue); }
+    .badge-low       { background: #f1f3f5; color: #6b7280; }
+    .badge-medical   { background: var(--accent); color: #fff; }
+    .badge-complete  { background: var(--green-bg); color: var(--green); }
+    .badge-open      { background: #fef3e2; color: #a05000; }
+    .badge-children  { background: #fce8e6; color: #8b1a10; }
+    .badge-elderly   { background: var(--blue-bg); color: var(--blue); }
+
+    /* ── Body of card: 2-col grid ── */
+    .r-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    @media (max-width: 700px) { .r-body { grid-template-columns: 1fr; } }
+
+    .r-info { padding: 14px 20px; }
+    .r-info .problem {
+      font-size: 0.88rem;
+      color: var(--ink-2);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+    .r-meta { display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 0.8rem; color: var(--ink-2); }
+    .r-meta span strong { color: var(--ink); font-weight: 600; }
+
+    .r-actions {
+      padding: 14px 20px;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    @media (max-width: 700px) {
+      .r-actions { border-left: none; border-top: 1px solid var(--border); }
+    }
+
+    .action-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-2);
+      margin-bottom: 4px;
+    }
+
+    /* Priority selector */
+    .priority-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .priority-form select {
+      padding: 6px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      background: #f8f9fb;
+      color: var(--ink);
+      flex: 1;
+    }
+    .priority-form select:focus { outline: none; border-color: var(--blue); }
+
+    /* Buttons */
+    .btn {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 7px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn:hover  { opacity: 0.87; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-set    { background: var(--blue); color: #fff; }
+    .btn-complete { background: var(--green); color: #fff; }
+    .btn-reopen { background: #6b7280; color: #fff; }
+    .btn-delete { background: var(--accent); color: #fff; }
+    .btn-sm     { padding: 5px 10px; font-size: 0.78rem; }
+
+    /* Notes expand panel */
+    .notes-toggle {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 6px 12px;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink-2);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    .notes-toggle:hover { border-color: var(--ink-2); color: var(--ink); }
+    .notes-panel {
+      display: none;
+      margin-top: 8px;
+    }
+    .notes-panel.open { display: block; }
+    .notes-panel textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      color: var(--ink);
+      background: #f8f9fb;
+      resize: vertical;
+      min-height: 70px;
+    }
+    .notes-panel input[type=text] {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      color: var(--ink);
+      background: #f8f9fb;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+    .notes-panel input:focus,
+    .notes-panel textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      background: #fff;
+    }
+
+    /* Delete confirm */
+    .delete-confirm { display: none; }
+    .delete-confirm.show { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .delete-warn { font-size: 0.78rem; color: var(--accent); font-weight: 600; }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      border: 2px dashed var(--border);
+      border-radius: var(--r);
+      color: var(--ink-2);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ─────────────────────────────────────────────────── -->
+<nav class="topbar">
+  <div class="topbar-brand">
+    <span class="shield">🛡️</span>
+    Admin Control Panel
+  </div>
+  <div class="topbar-right">
+    <a href="{{ url_for('victim.victim_log') }}">Victim Log</a>
+    <a href="{{ url_for('volunteer.volunteer') }}">Volunteer Dashboard</a>
+    <form method="post" action="{{ url_for('admin.admin_logout') }}" style="margin:0">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Flash -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-list">
+        {% for msg in messages %}<li>{{ msg }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ── Stats ─────────────────────────────────────────────────── -->
+  <div class="stats-row">
+    <div class="stat-card blue">
+      <div class="num">{{ stats.total }}</div>
+      <div class="lbl">Total reports</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="num">{{ stats.open }}</div>
+      <div class="lbl">Open / active</div>
+    </div>
+    <div class="stat-card green">
+      <div class="num">{{ stats.complete }}</div>
+      <div class="lbl">Resolved</div>
+    </div>
+    <div class="stat-card red">
+      <div class="num">{{ stats.immediate }}</div>
+      <div class="lbl">Immediate priority</div>
+    </div>
+    <div class="stat-card red">
+      <div class="num">{{ stats.medical }}</div>
+      <div class="lbl">Medical emergencies</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="num">{{ stats.volunteers }}</div>
+      <div class="lbl">Active volunteers</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="num">{{ stats.people }}</div>
+      <div class="lbl">People affected</div>
+    </div>
+  </div>
+
+  <!-- ── Filter bar ────────────────────────────────────────────── -->
+  <form method="get" action="{{ url_for('admin.admin_dashboard') }}" class="filter-bar">
+    <div>
+      <label>Search</label>
+      <input type="text" name="search" value="{{ filters.search }}" placeholder="Name, location, problem…">
+    </div>
+    <div>
+      <label>Priority</label>
+      <select name="priority">
+        <option value="">All priorities</option>
+        {% for p in priority_levels %}
+          <option value="{{ p }}" {% if filters.priority == p %}selected{% endif %}>{{ p | capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Status</label>
+      <select name="status">
+        <option value="">All statuses</option>
+        <option value="open"     {% if filters.status == 'open'     %}selected{% endif %}>Open</option>
+        <option value="complete" {% if filters.status == 'complete' %}selected{% endif %}>Complete</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-filter">Filter</button>
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn-clear">Clear</a>
+  </form>
+
+  <!-- ── Reports ───────────────────────────────────────────────── -->
+  <div class="sec-head">
+    <h2>All Disaster Reports</h2>
+    <span class="count-pill">{{ reports | length }} shown</span>
+  </div>
+
+  {% if reports %}
+    <div class="report-grid">
+      {% for r in reports %}
+        <div class="r-card {{ r.priority }} {% if r.status == 'complete' %}complete{% endif %}">
+
+          <!-- Head -->
+          <div class="r-head">
+            <div class="r-head-left">
+              <div class="r-id">#{{ r.id }} · {{ r.created_at[:16] if r.created_at else '—' }}</div>
+              <div class="r-name">{{ r.name }} <span style="font-weight:400;color:var(--ink-2)">· {{ r.phone }}</span></div>
+              <div class="r-location">📍 {{ r.location }}</div>
+              <div class="badges">
+                <!-- Priority badge -->
+                <span class="badge badge-{{ r.priority }}">{{ r.priority | upper }}</span>
+                <!-- Status -->
+                {% if r.status == 'complete' %}
+                  <span class="badge badge-complete">✓ Complete</span>
+                {% else %}
+                  <span class="badge badge-open">Open</span>
+                {% endif %}
+                <!-- Medical -->
+                {% if r.medical_emergency == 'yes' %}
+                  <span class="badge badge-medical">🚨 Medical</span>
+                {% endif %}
+                <!-- Vulnerable -->
+                {% if r.children %}
+                  <span class="badge badge-children">{{ r.children }} children</span>
+                {% endif %}
+                {% if r.old_people %}
+                  <span class="badge badge-elderly">{{ r.old_people }} elderly</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Body: info + actions -->
+          <div class="r-body">
+            <!-- Info col -->
+            <div class="r-info">
+              <p class="problem">{{ r.problem }}</p>
+              <div class="r-meta">
+                <span>👥 <strong>{{ r.people_affected or 0 }}</strong> affected</span>
+                <span>🙋 <strong>{{ r.volunteers }}</strong> volunteers</span>
+                <span>✅ <strong>{{ r.rescued_volunteers }}</strong> rescued</span>
+                <span>Help arrived: <strong>{{ r.help_arrived | title }}</strong></span>
+                {% if r.assigned_to %}
+                  <span>Assigned: <strong>{{ r.assigned_to }}</strong></span>
+                {% endif %}
+                {% if r.admin_notes %}
+                  <span style="color:var(--blue)">📝 Note: {{ r.admin_notes[:60] }}{% if r.admin_notes|length > 60 %}…{% endif %}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Actions col -->
+            <div class="r-actions">
+
+              <!-- Priority -->
+              <div>
+                <div class="action-label">Set priority</div>
+                <form method="post" action="{{ url_for('admin.set_priority') }}" class="priority-form">
+                  <input type="hidden" name="report_id" value="{{ r.id }}">
+                  <select name="priority">
+                    {% for p in priority_levels %}
+                      <option value="{{ p }}" {% if r.priority == p %}selected{% endif %}>{{ p | capitalize }}</option>
+                    {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-set btn-sm">Set</button>
+                </form>
+              </div>
+
+              <!-- Status toggle -->
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                {% if r.status != 'complete' %}
+                  <form method="post" action="{{ url_for('admin.mark_complete') }}">
+                    <input type="hidden" name="report_id" value="{{ r.id }}">
+                    <button type="submit" class="btn btn-complete btn-sm">✓ Mark Complete</button>
+                  </form>
+                {% else %}
+                  <form method="post" action="{{ url_for('admin.reopen_report') }}">
+                    <input type="hidden" name="report_id" value="{{ r.id }}">
+                    <button type="submit" class="btn btn-reopen btn-sm">↩ Reopen</button>
+                  </form>
+                {% endif %}
+              </div>
+
+              <!-- Notes -->
+              <div>
+                <button class="notes-toggle" onclick="toggleNotes({{ r.id }})">
+                  📝 {% if r.admin_notes %}Edit notes{% else %}Add notes / assign{% endif %}
+                </button>
+                <div class="notes-panel" id="notes-{{ r.id }}">
+                  <form method="post" action="{{ url_for('admin.set_notes') }}">
+                    <input type="hidden" name="report_id" value="{{ r.id }}">
+                    <textarea name="admin_notes" placeholder="Admin notes about this report…" rows="3">{{ r.admin_notes or '' }}</textarea>
+                    <input type="text" name="assigned_to" placeholder="Assign to (team/person name)" value="{{ r.assigned_to or '' }}">
+                    <button type="submit" class="btn btn-set btn-sm">Save</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Delete -->
+              <div>
+                <button class="btn btn-sm" style="background:#f0f2f5;border:1.5px solid var(--border);color:var(--accent);font-weight:700;"
+                        onclick="showDelete({{ r.id }})">🗑 Delete report</button>
+                <div class="delete-confirm" id="del-{{ r.id }}">
+                  <span class="delete-warn">Permanently delete?</span>
+                  <form method="post" action="{{ url_for('admin.delete_report') }}" style="display:inline">
+                    <input type="hidden" name="report_id" value="{{ r.id }}">
+                    <button type="submit" class="btn btn-delete btn-sm">Yes, delete</button>
+                  </form>
+                  <button class="btn btn-sm" style="background:#f0f2f5;border:1.5px solid var(--border);color:var(--ink-2);"
+                          onclick="hideDelete({{ r.id }})">Cancel</button>
+                </div>
+              </div>
+
+            </div><!-- /.r-actions -->
+          </div><!-- /.r-body -->
+
+        </div><!-- /.r-card -->
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <div style="font-size:2.5rem;margin-bottom:10px">📋</div>
+      No reports match your filters. <a href="{{ url_for('admin.admin_dashboard') }}" style="color:var(--blue)">Clear filters</a>
+    </div>
+  {% endif %}
+
+</div><!-- /.page -->
+
+<script>
+  function toggleNotes(id) {
+    const panel = document.getElementById('notes-' + id);
+    panel.classList.toggle('open');
+  }
+  function showDelete(id) {
+    document.getElementById('del-' + id).classList.add('show');
+  }
+  function hideDelete(id) {
+    document.getElementById('del-' + id).classList.remove('show');
+  }
+</script>
+</body>
+</html>

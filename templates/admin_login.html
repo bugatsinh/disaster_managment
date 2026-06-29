@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Access — Disaster Response</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:     #0f1923;
+      --ink-2:   #3d5166;
+      --surface: #f0f2f5;
+      --card:    #ffffff;
+      --border:  #d5dce6;
+      --accent:  #c8391b;
+      --blue:    #1558b0;
+      --mono:    'IBM Plex Mono', monospace;
+      --sans:    'Inter', system-ui, sans-serif;
+      --r:       14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { width: 100%; max-width: 420px; }
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-icon {
+      width: 52px; height: 52px;
+      background: var(--accent);
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+    .brand h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .brand p {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--ink-2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(15,25,35,0.09);
+    }
+    .card-top {
+      background: var(--ink);
+      padding: 20px 28px 16px;
+      border-bottom: 3px solid var(--accent);
+    }
+    .card-top .eyebrow {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .card-top h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .card-body { padding: 28px; }
+    .flash {
+      background: #fce8e6;
+      border: 1px solid #f5c6c2;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: #8b1a10;
+      margin-bottom: 18px;
+    }
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-2);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      background: #f8f9fb;
+      color: var(--ink);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,57,27,0.1);
+      background: #fff;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-submit:hover { background: #a82e16; transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+    .back {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.85rem;
+    }
+    .back a { color: var(--ink-2); text-decoration: none; }
+    .back a:hover { color: var(--ink); text-decoration: underline; }
+    .hint {
+      background: #f0f4fb;
+      border: 1px solid #c6d4eb;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--blue);
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <h1>Disaster Response</h1>
+      <p>Admin Control Panel</p>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="eyebrow">Restricted Access</div>
+        <h2>Admin Sign In</h2>
+      </div>
+      <div class="card-body">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for msg in messages %}
+              <div class="flash">{{ msg }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="hint">
+          Default credentials for testing:<br>
+          ID &nbsp;&nbsp;&nbsp;→ <strong>admin2025</strong><br>
+          Pass → <strong>disaster@secure</strong>
+        </div>
+
+        <form method="post" action="{{ url_for('admin.admin_login') }}">
+          <div class="field">
+            <label>Admin ID</label>
+            <input type="text" name="admin_id" placeholder="Enter admin ID" required autocomplete="username">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn-submit">Access Admin Panel →</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="back">
+      <a href="{{ url_for('victim.victim_log') }}">← Back to Victim Log</a>
+    </div>
+  </div>
+</body>
+</html>

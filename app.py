@@ -3,15 +3,17 @@ from flask import Flask, redirect, url_for
 from db import init_db
 from victim import victim_bp
 from volunteer import volunteer_bp
+from admin import admin_bp, init_admin_columns
 
 app = Flask(__name__)
 app.secret_key = 'change-this-secret-key'
 
 app.register_blueprint(victim_bp)
 app.register_blueprint(volunteer_bp)
+app.register_blueprint(admin_bp)
 
 init_db()
-
+init_admin_columns()
 
 @app.route('/', methods=['GET'])
 def index():
