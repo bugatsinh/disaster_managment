@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Victim Log — Disaster Response</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+      :root {
+        --bg-a: #eef3fb;
+        --bg-b: #f7f9fd;
+        --surface: #ffffff;
+        --muted: #687890;
+        --text: #17233d;
+        --accent: #2f71ba;
+        --accent-2: #4c8ed1;
+        --border: rgba(45,72,122,0.12);
+      }
+      html, body {
+        height: 100%;
+        font-family: Inter, Quicksand, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        color: var(--text);
+        background: radial-gradient(circle at top left, rgba(47,113,186,0.12) 0%, transparent 28%),
+                    linear-gradient(180deg, var(--bg-a) 0%, var(--bg-b) 100%);
+        -webkit-font-smoothing: antialiased;
+      }
+      body { overflow-x: hidden; }
+      .container { max-width: 1120px; }
+      .header-row {
+        backdrop-filter: blur(16px);
+        background: rgba(255,255,255,0.92);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: 0 20px 55px rgba(45,72,122,0.08);
+      }
+      .card-soft {
+        background: var(--surface);
+        border: 1px solid rgba(226,232,240,0.9);
+        border-radius: 22px;
+        box-shadow: 0 18px 40px rgba(45,72,122,0.08);
+      }
+      .form-label { color: var(--muted); font-weight: 600; font-size: 0.95rem; }
+      textarea.form-control, input.form-control, .form-select {
+        background: #f8fbff;
+        border: 1px solid #dce7f1;
+        border-radius: 14px;
+        color: var(--text);
+        box-shadow: none;
+        padding: 0.95rem 1rem;
+      }
+      textarea.form-control:focus, input.form-control:focus, .form-select:focus {
+        border-color: rgba(47,113,186,0.35);
+        box-shadow: 0 0 0 0.2rem rgba(47,113,186,0.12);
+      }
+      .section-label {
+        font-size: 0.92rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin-bottom: 1rem;
+      }
+      .card-soft .card-header {
+        border-bottom: 1px solid rgba(226,232,240,0.95);
+        padding: 1.5rem 2rem;
+        border-top-left-radius: 22px;
+        border-top-right-radius: 22px;
+        background: #f8fbff;
+      }
+      .card-soft .card-body { padding: 2rem; }
+      .table thead th {
+        border-bottom: 1px solid #edf2f7;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .table tbody tr {
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 8px 20px rgba(45,72,122,0.03);
+      }
+      .table tbody td { vertical-align: middle; padding-top: 1rem; padding-bottom: 1rem; border-top: 0; }
+      .table tbody tr:hover { background: rgba(47,113,186,0.04); }
+      .small-muted { color: var(--muted); font-size: 0.9rem; }
+      .btn { border-radius: 12px; padding: 0.75rem 1.15rem; font-weight: 700; transition: all 0.2s ease; }
+      .btn-primary {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        border: 0;
+        color: #fff;
+        box-shadow: 0 12px 28px rgba(47,113,186,0.18);
+      }
+      .btn-primary:hover { transform: translateY(-1px); }
+      .btn-secondary { background: #ffffff; border: 1px solid #dce7f1; color: var(--text); }
+      .btn-outline-primary {
+        border: 1px solid rgba(47,113,186,0.22);
+        color: #2f71ba;
+        background: rgba(255,255,255,0.92);
+      }
+      .btn-outline-primary:hover { background: rgba(47,113,186,0.08); color: #1f4d7d; }
+      .alert { border: none; border-radius: 16px; background: rgba(255,255,255,0.95); color: var(--text); box-shadow: 0 12px 28px rgba(45,72,122,0.08); }
+      .emergency-panel {
+        border: 1px solid rgba(220,53,69,0.18);
+        background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
+        border-radius: 22px;
+        box-shadow: 0 18px 40px rgba(220,53,69,0.08);
+      }
+      .emergency-panel .section-label { color: #b42318; }
+      .contact-card, .shelter-card {
+        background: #ffffff;
+        border: 1px solid rgba(226,232,240,0.95);
+        border-radius: 18px;
+        padding: 1.25rem;
+        height: 100%;
+      }
+      .hotline { font-size: 1.35rem; font-weight: 700; color: #b42318; letter-spacing: 0.04em; }
+      .hotline a { color: inherit; text-decoration: none; }
+      .helpline-bar {
+        background: linear-gradient(90deg, #b42318, #d92d20);
+        border-radius: 22px;
+        padding: 1.25rem 1.5rem;
+        color: #fff;
+        box-shadow: 0 18px 40px rgba(217,45,32,0.18);
+      }
+      .helpline-bar .section-label { color: rgba(255,255,255,0.82); margin-bottom: 0.5rem; }
+      .helpline-item {
+        background: rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 16px;
+        padding: 0.9rem 1rem;
+        height: 100%;
+      }
+      .helpline-item .service { font-size: 0.85rem; opacity: 0.92; }
+      .helpline-item .number { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+      .helpline-item .number a { color: #fff; text-decoration: none; }
+      .badge { border-radius: 999px; padding: 0.45rem 0.8rem; font-size: 0.82rem; }
+
+      /* Login panel */
+      .login-panel {
+        background: #f8fbff;
+        border: 1px solid #dce7f1;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .login-panel h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+
+      @media (max-width: 767px) {
+        .header-row { padding: 24px; }
+        .btn { width: 100%; margin-top: 0.6rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+
+      <!-- Header -->
+      <div class="header-row d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
+        <div>
+          <h1 class="mb-2" style="font-weight:700">Victim / Emergency Log</h1>
+          <p class="small-muted mb-0">Capture incident details, monitor active responses, and keep rescue updates organized in one place.</p>
+        </div>
+        <a href="{{ url_for('volunteer.volunteer') }}" class="btn btn-outline-primary">Volunteer Dashboard →</a>
+      </div>
+
+      <!-- Helpline bar -->
+      <section class="helpline-bar mb-4">
+        <div class="section-label">Need help now?</div>
+        <h2 class="h5 mb-2" style="font-weight:700">Emergency helpline numbers</h2>
+        <p class="mb-3" style="opacity:0.92">If you are in danger, call these government helplines immediately — before or after submitting your report.</p>
+        <div class="row g-3">
+          {% for line in helplines %}
+            <div class="col-6 col-md">
+              <div class="helpline-item">
+                <div class="service">{{ line.name }}</div>
+                <div class="number mt-1"><a href="tel:{{ line.number }}">{{ line.number }}</a></div>
+                <div class="service mt-1">{{ line.description }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-info">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Emergency resources (shown after drastic report submission) -->
+      {% if emergency_resources %}
+        <section class="emergency-panel p-4 mb-4">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <div class="section-label">Immediate assistance</div>
+              <h2 class="h5 mb-1" style="font-weight:700">Emergency contacts for your report</h2>
+              <p class="small-muted mb-0">
+                Your report was flagged as a catastrophe or drastic event. Use these government numbers and go to the
+                nearest shelter or helping center near <strong>{{ emergency_resources.location }}</strong>.
+              </p>
+            </div>
+            <span class="badge text-bg-danger">Drastic event detected</span>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-lg-7">
+              <h3 class="h6 mb-3" style="font-weight:700">Government branches for this problem</h3>
+              <div class="row g-3">
+                {% for contact in emergency_resources.government_contacts %}
+                  <div class="col-md-6">
+                    <div class="contact-card">
+                      <div class="small-muted mb-1">{{ contact.description }}</div>
+                      <div style="font-weight:700">{{ contact.name }}</div>
+                      <div class="hotline mt-2"><a href="tel:{{ contact.number }}">{{ contact.number }}</a></div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% if emergency_resources.nearest_shelter %}
+              <div class="col-lg-5">
+                <h3 class="h6 mb-3" style="font-weight:700">Nearest shelter / helping center</h3>
+                <div class="shelter-card">
+                  <div class="small-muted mb-1">{{ emergency_resources.nearest_shelter.type }}</div>
+                  <div style="font-weight:700">{{ emergency_resources.nearest_shelter.name }}</div>
+                  <p class="mb-2 mt-2">{{ emergency_resources.nearest_shelter.address }}</p>
+                  <div class="small-muted">Capacity: {{ emergency_resources.nearest_shelter.capacity }}</div>
+                  <div class="hotline mt-3"><a href="tel:{{ emergency_resources.nearest_shelter.phone }}">{{ emergency_resources.nearest_shelter.phone }}</a></div>
+                  <p class="small-muted mt-3 mb-0">{{ emergency_resources.nearest_shelter.match_note }}</p>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </section>
+      {% endif %}
+
+      <!-- Victim login / logout panel -->
+      {% if not victim %}
+        <div class="login-panel mb-4">
+          <h3>Login to view &amp; manage your reports</h3>
+          <form method="post" action="{{ url_for('victim.victim_login') }}" class="row g-3">
+            <div class="col-md-5">
+              <input name="name" class="form-control" placeholder="Your name" required>
+            </div>
+            <div class="col-md-5">
+              <input name="phone" class="form-control" placeholder="Phone number" required>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-primary w-100">Login</button>
+            </div>
+          </form>
+        </div>
+      {% else %}
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <span class="small-muted">Logged in as <strong>{{ victim.name }}</strong> ({{ victim.phone }})</span>
+          <form method="post" action="{{ url_for('victim.victim_logout') }}" class="mb-0">
+            <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+          </form>
+        </div>
+      {% endif %}
+
+      <!-- Submit report form -->
+      <form method="post" action="{{ url_for('victim.submit_victim') }}" enctype="multipart/form-data" class="card-soft mb-4">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+          <div>
+            <div class="section-label">New incident report</div>
+            <h2 class="h5 mb-1" style="font-weight:700">Report victim details</h2>
+            <p class="small-muted mb-0">Provide accurate information so the response team can act quickly.</p>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary mt-2">Submit Report</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label class="form-label">Name *</label>
+              <input name="name" class="form-control" value="{{ victim.name if victim else '' }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone *</label>
+              <input name="phone" class="form-control" value="{{ victim.phone if victim else '' }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Location *</label>
+              <input name="location" class="form-control" placeholder="e.g. Jaipur, Rajasthan" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Problem Description *</label>
+              <textarea name="problem" class="form-control" rows="4" placeholder="Describe the emergency in detail..." required></textarea>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">People Affected</label>
+              <input type="number" min="0" name="people_affected" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Medical Emergency?</label>
+              <select name="medical_emergency" class="form-select">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Children Present</label>
+              <input type="number" min="0" name="children" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Elderly Present</label>
+              <input type="number" min="0" name="old_people" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Photo (optional)</label>
+              <input type="file" name="photo" class="form-control" accept="image/*">
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Reports table (only when logged in) -->
+      {% if victim and reports %}
+        <section class="card-soft p-4">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <div class="section-label">Your active reports</div>
+              <h2 class="h5 mb-1" style="font-weight:700">Submitted reports</h2>
+              <p class="small-muted mb-0">Monitor response progress and update rescue status directly from the table.</p>
+            </div>
+            <div class="text-md-end">
+              <span class="badge text-bg-primary me-1">Active</span>
+              <span class="badge text-bg-success">Resolved</span>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-middle table-borderless">
+              <thead class="bg-light">
+                <tr>
+                  <th>Location</th>
+                  <th>Problem</th>
+                  <th>Medical</th>
+                  <th>Volunteers</th>
+                  <th>Status</th>
+                  <th>Update</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for report in reports %}
+                  <tr>
+                    <td>{{ report.location }}</td>
+                    <td>{{ report.problem[:80] }}{% if report.problem|length > 80 %}…{% endif %}</td>
+                    <td>{{ report.medical_emergency_label }}</td>
+                    <td>
+                      <div>{{ report.participating_volunteers }} responding</div>
+                      <div class="small-muted">{{ report.rescued_volunteers }} rescued</div>
+                    </td>
+                    <td>
+                      <span class="badge {% if report.status == 'complete' %}text-bg-success{% else %}text-bg-warning{% endif %}">
+                        {{ report.status_label }}
+                      </span>
+                      <div class="small-muted mt-1">{{ report.help_arrived_label }}</div>
+                      <div class="small-muted">Rescued: {{ report.victim_rescued_label }}</div>
+                    </td>
+                    <td>
+                      <form method="post" action="{{ url_for('victim.victim_status') }}" class="d-grid gap-2" style="min-width:180px">
+                        <input type="hidden" name="report_id" value="{{ report.id }}">
+                        <select name="help_arrived" class="form-select form-select-sm" {% if report.status == 'complete' %}disabled{% endif %}>
+                          <option value="unknown" {% if report.help_arrived == 'unknown' %}selected{% endif %}>Help not updated</option>
+                          <option value="yes"     {% if report.help_arrived == 'yes'     %}selected{% endif %}>Help arrived</option>
+                          <option value="no"      {% if report.help_arrived == 'no'      %}selected{% endif %}>Help not arrived</option>
+                        </select>
+                        <select name="victim_rescued" class="form-select form-select-sm" {% if report.status == 'complete' %}disabled{% endif %}>
+                          <option value="no"  {% if not report.victim_rescued %}selected{% endif %}>Not rescued</option>
+                          <option value="yes" {% if report.victim_rescued     %}selected{% endif %}>Rescued</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary" {% if report.status == 'complete' %}disabled{% endif %}>Update</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      {% elif victim and not reports %}
+        <div class="card-soft p-4 text-center">
+          <p class="small-muted mb-0">You have no active reports. Submit one above.</p>
+        </div>
+      {% endif %}
+
+    </div>
+  </body>
+</html>
